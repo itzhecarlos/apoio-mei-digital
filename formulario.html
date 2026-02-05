@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Apoio MEI Digital | Formulario de atendimento</title>
+    <meta
+      name="description"
+      content="Preencha seus dados para iniciar a regularizacao do seu MEI com atendimento online."
+    />
+    <link rel="icon" href="logo.ico" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="lead-page">
+      <section class="section">
+        <div class="container">
+          <div class="lead-wrapper">
+            <div class="lead-intro">
+              <p class="badge badge-light">Quase la</p>
+              <h1>Preencha seus dados para iniciar seu atendimento</h1>
+              <p>
+                Nossa equipe usa essas informacoes para analisar sua situacao e entrar em contato com os proximos passos.
+              </p>
+              <a class="btn btn-outline-dark" href="./index.html">Voltar para a pagina inicial</a>
+            </div>
+
+            <form class="lead-form" action="#" method="post">
+              <label for="nome-completo">Nome completo</label>
+              <input id="nome-completo" name="nome_completo" type="text" autocomplete="name" required />
+
+              <label for="celular">Numero de celular</label>
+              <input id="celular" name="celular" type="tel" autocomplete="tel" required />
+
+              <label for="cnpj">CNPJ da empresa</label>
+              <input id="cnpj" name="cnpj" type="text" inputmode="numeric" required />
+
+              <button class="btn" type="submit">Enviar dados</button>
+            </form>
+          </div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

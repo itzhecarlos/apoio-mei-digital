@@ -204,8 +204,56 @@ details p { color: var(--muted); margin-top: 8px; }
   flex-wrap: wrap;
 }
 
+.lead-page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #f4faf7 0%, #ecf4ef 100%);
+}
+.lead-wrapper {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 28px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+.lead-intro h1 {
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  margin: 14px 0 14px;
+}
+.lead-intro p {
+  color: var(--muted);
+  margin-bottom: 20px;
+}
+.lead-form {
+  display: grid;
+  gap: 10px;
+  align-content: start;
+}
+.lead-form label {
+  font-weight: 700;
+}
+.lead-form input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  font: inherit;
+  margin-bottom: 8px;
+}
+.lead-form input:focus {
+  outline: 2px solid #cbe6d7;
+  border-color: #9bcfb4;
+}
+.btn-outline-dark {
+  background: transparent;
+  color: var(--primary);
+  border: 1px solid var(--primary);
+}
+
 @media (max-width: 960px) {
   .hero-content, .split, .grid-4, .grid-3 { grid-template-columns: 1fr; }
+  .lead-wrapper { grid-template-columns: 1fr; }
   .section { padding: 64px 0; }
   .stats { margin-top: 8px; }
 }
