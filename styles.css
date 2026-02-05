@@ -292,6 +292,9 @@ details p { color: var(--muted); margin-top: 8px; }
 .policy-date {
   font-size: 0.95rem;
 }
+.policy .btn {
+  margin-top: 20px;
+}
 
 @media (max-width: 960px) {
   .hero-content, .split, .grid-4, .grid-3 { grid-template-columns: 1fr; }
