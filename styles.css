@@ -233,7 +233,7 @@ details p { color: var(--muted); margin-top: 8px; }
 .lead-form label {
   font-weight: 700;
 }
-.lead-form input {
+.lead-form input:not([type="checkbox"]) {
   width: 100%;
   padding: 12px;
   border-radius: 10px;
@@ -241,20 +241,27 @@ details p { color: var(--muted); margin-top: 8px; }
   font: inherit;
   margin-bottom: 8px;
 }
-.lead-form input:focus {
+.lead-form input:not([type="checkbox"]):focus {
   outline: 2px solid #cbe6d7;
   border-color: #9bcfb4;
 }
 .consent-line {
   display: flex;
-  gap: 10px;
-  align-items: flex-start;
+  gap: 12px;
+  align-items: center;
   color: var(--muted);
   font-weight: 400;
+  font-size: 0.95rem;
   margin: 4px 0 8px;
 }
 .consent-line input[type="checkbox"] {
-  margin-top: 2px;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  flex: 0 0 auto;
+}
+.consent-line span {
+  white-space: nowrap;
 }
 .consent-line a {
   color: var(--primary);
