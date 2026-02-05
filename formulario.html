@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Apoio MEI Digital | Formulario de atendimento</title>
+    <title>Apoio MEI Digital | Formulário de atendimento</title>
     <meta
       name="description"
       content="Preencha seus dados para iniciar a regularizacao do seu MEI com atendimento online."
@@ -17,23 +17,33 @@
         <div class="container">
           <div class="lead-wrapper">
             <div class="lead-intro">
-              <p class="badge badge-light">Quase la</p>
+              <p class="badge badge-light">Quase lá</p>
               <h1>Preencha seus dados para iniciar seu atendimento</h1>
               <p>
-                Nossa equipe usa essas informacoes para analisar sua situacao e entrar em contato com os proximos passos.
+                Nossa equipe usa essas informações para analisar sua situação e entrar em contato com os próximos passos.
               </p>
-              <a class="btn btn-outline-dark" href="./index.html">Voltar para a pagina inicial</a>
+              <a class="btn btn-outline-dark" href="./index.html">Voltar para a página inicial</a>
             </div>
 
             <form class="lead-form" action="#" method="post">
               <label for="nome-completo">Nome completo</label>
               <input id="nome-completo" name="nome_completo" type="text" autocomplete="name" required />
 
-              <label for="celular">Numero de celular</label>
+              <label for="celular">Número de celular</label>
               <input id="celular" name="celular" type="tel" autocomplete="tel" required />
 
               <label for="cnpj">CNPJ da empresa</label>
               <input id="cnpj" name="cnpj" type="text" inputmode="numeric" required />
+
+              <label class="consent-line" for="aceite-lgpd">
+                <input id="aceite-lgpd" name="aceite_lgpd" type="checkbox" required />
+                <span>
+                  Li e aceito a
+                  <a href="./politica-privacidade.html" target="_blank" rel="noopener noreferrer">
+                    Política de Privacidade / LGPD
+                  </a>
+                </span>
+              </label>
 
               <button class="btn" type="submit">Enviar dados</button>
             </form>
