@@ -29,6 +29,9 @@
               <label for="nome-completo">Nome completo</label>
               <input id="nome-completo" name="nome_completo" type="text" autocomplete="name" required />
 
+              <label for="email">E-mail</label>
+              <input id="email" name="email" type="email" autocomplete="email" required />
+
               <label for="celular">Número de celular</label>
               <input id="celular" name="celular" type="tel" autocomplete="tel" required />
 
@@ -51,5 +54,52 @@
         </div>
       </section>
     </main>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const form = document.querySelector(".lead-form");
+        if (!form) return;
+
+        form.addEventListener("submit", async (event) => {
+          event.preventDefault();
+
+          const payload = {
+            full_name: document.getElementById("nome-completo")?.value?.trim() || "",
+            cnpj: document.getElementById("cnpj")?.value?.trim() || "",
+            email: document.getElementById("email")?.value?.trim() || "",
+            whatsapp: document.getElementById("celular")?.value?.trim() || "",
+            consent_lgpd: document.getElementById("aceite-lgpd")?.checked || false,
+          };
+
+          try {
+            const response = await fetch("https://apoiomeidigital.app.n8n.cloud/webhook/leat-to-pix", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(payload),
+            });
+
+            const data = await response.json();
+
+            if (!data || data.ok === false) {
+              const errorText = Array.isArray(data?.errors)
+                ? data.errors.join("\n")
+                : data?.message || "Não foi possível enviar os dados. Tente novamente.";
+              alert(errorText);
+              return;
+            }
+
+            if (data.ok === true && data.ticket_url) {
+              const opened = window.open(data.ticket_url, "_blank");
+              if (!opened) {
+                window.location.href = data.ticket_url;
+              }
+            }
+          } catch (error) {
+            alert("Erro de conexão. Verifique sua internet e tente novamente.");
+          }
+        });
+      });
+    </script>
   </body>
 </html>
