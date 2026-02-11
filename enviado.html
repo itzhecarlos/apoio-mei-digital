@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Apoio MEI Digital | Enviado</title>
+    <meta name="description" content="Confirmação de envio e pagamento Pix." />
+    <link rel="icon" href="logo.ico" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="lead-page">
+      <section class="section">
+        <div class="container">
+          <div class="lead-wrapper">
+            <div class="lead-intro">
+              <p class="badge badge-light">Sucesso</p>
+              <h1>Dados enviados com sucesso! ✅</h1>
+              <div id="pix-actions">
+                <a id="pay-link" class="btn" href="#" target="_blank" rel="noopener noreferrer">
+                  Pagar Pix agora
+                </a>
+
+                <div style="margin-top: 16px;">
+                  <label for="pix-code">Copia e cola Pix</label>
+                  <textarea id="pix-code" rows="4" readonly></textarea>
+                </div>
+
+                <button id="copy-btn" class="btn btn-outline-dark" type="button" style="margin-top: 12px;">
+                  Copiar cÃ³digo Pix
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const ticketUrl = sessionStorage.getItem("ticket_url");
+      const qrCode = sessionStorage.getItem("qr_code");
+
+      const statusMsg = document.getElementById("status-msg");
+      const actions = document.getElementById("pix-actions");
+      const payLink = document.getElementById("pay-link");
+      const pixCode = document.getElementById("pix-code");
+      const copyBtn = document.getElementById("copy-btn");
+
+      if (!ticketUrl || !qrCode) {
+        if (statusMsg) {
+          statusMsg.textContent =
+            "NÃ£o encontramos o Pix desta sessÃ£o. Volte e envie novamente.";
+        }
+        if (actions) actions.style.display = "none";
+      } else {
+        if (payLink) payLink.href = ticketUrl;
+        if (pixCode) pixCode.value = qrCode;
+      }
+
+      if (copyBtn && pixCode) {
+        copyBtn.addEventListener("click", async () => {
+          const value = pixCode.value || "";
+          if (!value) {
+            alert("Nenhum cÃ³digo Pix para copiar.");
+            return;
+          }
+          try {
+            await navigator.clipboard.writeText(value);
+            alert("CÃ³digo Pix copiado!");
+          } catch (error) {
+            pixCode.focus();
+            pixCode.select();
+            document.execCommand("copy");
+            alert("CÃ³digo Pix copiado!");
+          }
+        });
+      }
+    </script>
+  </body>
+</html>
