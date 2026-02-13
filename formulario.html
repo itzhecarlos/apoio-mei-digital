@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Apoio MEI Digital | Formulário de atendimento</title>
+    <title>Apoio MEI Digital | FormulÃ¡rio de atendimento</title>
     <meta
       name="description"
       content="Preencha seus dados para iniciar a regularizacao do seu MEI com atendimento online."
@@ -18,16 +18,16 @@
         <div class="container">
           <div class="lead-wrapper">
             <div class="lead-intro">
-              <p class="badge badge-light">Quase lá</p>
+              <p class="badge badge-light">Quase lÃ¡</p>
               <h1>Preencha seus dados para iniciar seu atendimento</h1>
               <p>
-                Nossa equipe usa essas informações para analisar sua situação e
-                entrar em contato com os próximos passos.
+                Nossa equipe usa essas informaÃ§Ãµes para analisar sua situaÃ§Ã£o e
+                entrar em contato com os prÃ³ximos passos.
               </p>
-              <a class="btn btn-outline-dark" href="./index.html">Voltar para a página inicial</a>
+              <a class="btn btn-outline-dark" href="./index.html">Voltar para a pÃ¡gina inicial</a>
             </div>
 
-            <!-- ? Evita submit padrão mesmo se JS falhar (não navega / não dá 404 por POST local) -->
+            <!-- ? Evita submit padrï¿½o mesmo se JS falhar (nï¿½o navega / nï¿½o dï¿½ 404 por POST local) -->
             <form class="lead-form" action="javascript:void(0)" method="post" novalidate>
               <label for="nome-completo">Nome completo</label>
               <input id="nome-completo" name="nome_completo" type="text" autocomplete="name" required />
@@ -35,7 +35,7 @@
               <label for="email">E-mail</label>
               <input id="email" name="email" type="email" autocomplete="email" required />
 
-              <label for="celular">Número de celular</label>
+              <label for="celular">NÃºmero de celular</label>
               <input id="celular" name="celular" type="tel" autocomplete="tel" required />
 
               <label for="cnpj">CNPJ da empresa</label>
@@ -46,7 +46,7 @@
                 <span>
                   Li e aceito a
                   <a href="./politica-privacidade.html" target="_blank" rel="noopener noreferrer">
-                    Política de Privacidade / LGPD
+                    PolÃ­tica de Privacidade / LGPD
                   </a>
                 </span>
               </label>
@@ -65,7 +65,7 @@
     </div>
 
     <script>
-      // ? Como o script já está no final do body, não precisa de DOMContentLoaded
+      // ? Como o script jï¿½ estï¿½ no final do body, nï¿½o precisa de DOMContentLoaded
       const form = document.querySelector(".lead-form");
       const overlay = document.getElementById("loadingOverlay");
 
@@ -122,7 +122,7 @@
               }
             );
 
-            // ? Se a resposta não for JSON, evita quebrar o fluxo
+            // ? Se a resposta nï¿½o for JSON, evita quebrar o fluxo
             const contentType = response.headers.get("content-type") || "";
             let data = null;
 
@@ -131,7 +131,7 @@
             } else {
               const text = await response.text();
               // Ajuda a debugar se veio HTML/erro
-              console.error("Resposta não-JSON do webhook:", text);
+              console.error("Resposta nÃ£o-JSON do webhook:", text);
               alert("O servidor retornou uma resposta inesperada. Tente novamente em instantes.");
               return;
             }
@@ -139,7 +139,7 @@
             if (!response.ok || !data || data.ok === false) {
               const errorText = Array.isArray(data?.errors)
                 ? data.errors.join("\n")
-                : data?.message || "Não foi possível enviar os dados. Tente novamente.";
+                : data?.message || "NÃ£o foi possÃ­vel enviar os dados. Tente novamente.";
               alert(errorText);
               return;
             }
@@ -155,10 +155,10 @@
               return;
             }
 
-            alert("Pix gerado, mas não recebemos os dados esperados. Tente novamente.");
+            alert("Pix gerado, mas nÃ£o recebemos os dados esperados. Tente novamente.");
           } catch (error) {
             console.error(error);
-            alert("Erro de conexão. Verifique sua internet e tente novamente.");
+            alert("Erro de conexÃ£o. Verifique sua internet e tente novamente.");
           } finally {
             hideLoading(form);
           }
