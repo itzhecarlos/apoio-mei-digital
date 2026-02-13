@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Apoio MEI Digital | Formul√°rio de atendimento</title>
+    <title>Apoio MEI Digital | Formul·rio de atendimento</title>
     <meta
       name="description"
       content="Preencha seus dados para iniciar a regularizacao do seu MEI com atendimento online."
@@ -18,16 +18,16 @@
         <div class="container">
           <div class="lead-wrapper">
             <div class="lead-intro">
-              <p class="badge badge-light">Quase l√°</p>
+              <p class="badge badge-light">Quase l·</p>
               <h1>Preencha seus dados para iniciar seu atendimento</h1>
               <p>
-                Nossa equipe usa essas informa√ß√µes para analisar sua situa√ß√£o e
-                entrar em contato com os pr√≥ximos passos.
+                Nossa equipe usa essas informaÁıes para analisar sua situaÁ„o e
+                entrar em contato com os prÛximos passos.
               </p>
-              <a class="btn btn-outline-dark" href="./index.html">Voltar para a p√°gina inicial</a>
+              <a class="btn btn-outline-dark" href="./index.html">Voltar para a p·gina inicial</a>
             </div>
 
-            <!-- ‚úÖ Evita submit padr√£o mesmo se JS falhar (n√£o navega / n√£o d√° 404 por POST local) -->
+            <!-- ? Evita submit padr„o mesmo se JS falhar (n„o navega / n„o d· 404 por POST local) -->
             <form class="lead-form" action="javascript:void(0)" method="post" novalidate>
               <label for="nome-completo">Nome completo</label>
               <input id="nome-completo" name="nome_completo" type="text" autocomplete="name" required />
@@ -35,7 +35,7 @@
               <label for="email">E-mail</label>
               <input id="email" name="email" type="email" autocomplete="email" required />
 
-              <label for="celular">N√∫mero de celular</label>
+              <label for="celular">N˙mero de celular</label>
               <input id="celular" name="celular" type="tel" autocomplete="tel" required />
 
               <label for="cnpj">CNPJ da empresa</label>
@@ -46,7 +46,7 @@
                 <span>
                   Li e aceito a
                   <a href="./politica-privacidade.html" target="_blank" rel="noopener noreferrer">
-                    Pol√≠tica de Privacidade / LGPD
+                    PolÌtica de Privacidade / LGPD
                   </a>
                 </span>
               </label>
@@ -57,22 +57,50 @@
         </div>
       </section>
     </main>
+    <div id="loadingOverlay" aria-hidden="true">
+      <div class="loading-card">
+        <div class="spinner" aria-hidden="true"></div>
+        <p>Gerando seu Pix...</p>
+      </div>
+    </div>
 
     <script>
-      // ‚úÖ Como o script j√° est√° no final do body, n√£o precisa de DOMContentLoaded
+      // ? Como o script j· est· no final do body, n„o precisa de DOMContentLoaded
       const form = document.querySelector(".lead-form");
+      const overlay = document.getElementById("loadingOverlay");
 
       function onlyDigits(value) {
         return String(value || "").replace(/\D/g, "");
       }
 
+      function setFormDisabled(targetForm, isDisabled) {
+        if (!targetForm) return;
+        const fields = targetForm.querySelectorAll("input, select, textarea, button");
+        fields.forEach((field) => {
+          field.disabled = isDisabled;
+        });
+      }
+
+      function showLoading(targetForm) {
+        if (overlay) {
+          overlay.style.display = "flex";
+          overlay.setAttribute("aria-hidden", "false");
+        }
+        setFormDisabled(targetForm, true);
+      }
+
+      function hideLoading(targetForm) {
+        if (overlay) {
+          overlay.style.display = "none";
+          overlay.setAttribute("aria-hidden", "true");
+        }
+        setFormDisabled(targetForm, false);
+      }
+
       if (form) {
         form.addEventListener("submit", async (event) => {
           event.preventDefault();
-
-          // (Opcional, mas recomendado) desabilita bot√£o para evitar double click
-          const submitBtn = form.querySelector('button[type="submit"]');
-          if (submitBtn) submitBtn.disabled = true;
+          showLoading(form);
 
           const payload = {
             full_name: (document.getElementById("nome-completo")?.value || "").trim(),
@@ -94,7 +122,7 @@
               }
             );
 
-            // ‚úÖ Se a resposta n√£o for JSON, evita quebrar o fluxo
+            // ? Se a resposta n„o for JSON, evita quebrar o fluxo
             const contentType = response.headers.get("content-type") || "";
             let data = null;
 
@@ -103,7 +131,7 @@
             } else {
               const text = await response.text();
               // Ajuda a debugar se veio HTML/erro
-              console.error("Resposta n√£o-JSON do webhook:", text);
+              console.error("Resposta n„o-JSON do webhook:", text);
               alert("O servidor retornou uma resposta inesperada. Tente novamente em instantes.");
               return;
             }
@@ -111,7 +139,7 @@
             if (!response.ok || !data || data.ok === false) {
               const errorText = Array.isArray(data?.errors)
                 ? data.errors.join("\n")
-                : data?.message || "N√£o foi poss√≠vel enviar os dados. Tente novamente.";
+                : data?.message || "N„o foi possÌvel enviar os dados. Tente novamente.";
               alert(errorText);
               return;
             }
@@ -127,12 +155,12 @@
               return;
             }
 
-            alert("Pix gerado, mas n√£o recebemos os dados esperados. Tente novamente.");
+            alert("Pix gerado, mas n„o recebemos os dados esperados. Tente novamente.");
           } catch (error) {
             console.error(error);
-            alert("Erro de conex√£o. Verifique sua internet e tente novamente.");
+            alert("Erro de conex„o. Verifique sua internet e tente novamente.");
           } finally {
-            if (submitBtn) submitBtn.disabled = false;
+            hideLoading(form);
           }
         });
       }
