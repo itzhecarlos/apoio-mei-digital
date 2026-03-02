@@ -165,7 +165,12 @@ details p { color: var(--muted); margin-top: 8px; }
   border: 1px solid var(--border);
   border-radius: 18px;
   padding: 28px;
-  max-width: 620px;
+}
+.plan-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  align-items: stretch;
 }
 .plan-name {
   font-size: 1.15rem;
@@ -177,6 +182,19 @@ details p { color: var(--muted); margin-top: 8px; }
   font-weight: 800;
   line-height: 1.1;
   margin: 8px 0 14px;
+}
+.plan-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  color: var(--primary);
+  background: #e8f3ed;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 6px 12px;
+  margin-bottom: 14px;
+  font-size: 0.9rem;
 }
 .plan-benefits {
   margin: 0 0 22px;
@@ -241,7 +259,20 @@ details p { color: var(--muted); margin-top: 8px; }
   font: inherit;
   margin-bottom: 8px;
 }
+.lead-form select {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  font: inherit;
+  margin-bottom: 8px;
+  background: #fff;
+}
 .lead-form input:not([type="checkbox"]):focus {
+  outline: 2px solid #cbe6d7;
+  border-color: #9bcfb4;
+}
+.lead-form select:focus {
   outline: 2px solid #cbe6d7;
   border-color: #9bcfb4;
 }
@@ -301,6 +332,7 @@ details p { color: var(--muted); margin-top: 8px; }
   .lead-wrapper { grid-template-columns: 1fr; }
   .section { padding: 64px 0; }
   .stats { margin-top: 8px; }
+  .plan-grid { grid-template-columns: 1fr; }
 }
 
 #loadingOverlay {

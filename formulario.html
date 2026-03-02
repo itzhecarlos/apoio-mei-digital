@@ -29,6 +29,11 @@
 
             <!-- ? Evita submit padr�o mesmo se JS falhar (n�o navega / n�o d� 404 por POST local) -->
             <form class="lead-form" action="javascript:void(0)" method="post" novalidate>
+              <label for="plano">Selecione o plano</label>
+              <select id="plano" name="plano" required>
+                <option value="mensal">Plano Regular Mensal (assinatura) - R$ 29,90</option>
+                <option value="regularizacao-total">Regularização Total (uso único) - R$ 99,90</option>
+              </select>
               <label for="nome-completo">Nome completo</label>
               <input id="nome-completo" name="nome_completo" type="text" autocomplete="name" required />
 
@@ -68,6 +73,20 @@
       // ? Como o script j� est� no final do body, n�o precisa de DOMContentLoaded
       const form = document.querySelector(".lead-form");
       const overlay = document.getElementById("loadingOverlay");
+      const planSelect = document.getElementById("plano");
+
+      const PLAN_META = {
+        mensal: {
+          label: "Plano Regular Mensal",
+          type: "assinatura",
+          price: "29,90",
+        },
+        "regularizacao-total": {
+          label: "Regularizacao Total",
+          type: "unico",
+          price: "99,90",
+        },
+      };
 
       function onlyDigits(value) {
         return String(value || "").replace(/\D/g, "");
@@ -98,16 +117,30 @@
       }
 
       if (form) {
+        if (planSelect) {
+          const params = new URLSearchParams(window.location.search);
+          const preselectedPlan = params.get("plano");
+          if (preselectedPlan && PLAN_META[preselectedPlan]) {
+            planSelect.value = preselectedPlan;
+          }
+        }
+
         form.addEventListener("submit", async (event) => {
           event.preventDefault();
           showLoading(form);
 
+          const selectedPlan = planSelect?.value || "";
+          const selectedMeta = PLAN_META[selectedPlan] || {};
           const payload = {
             full_name: (document.getElementById("nome-completo")?.value || "").trim(),
             cnpj: onlyDigits(document.getElementById("cnpj")?.value || ""),
             email: (document.getElementById("email")?.value || "").trim(),
             whatsapp: onlyDigits(document.getElementById("celular")?.value || ""),
             consent_lgpd: !!document.getElementById("aceite-lgpd")?.checked,
+            plan: selectedPlan,
+            plan_label: selectedMeta.label || "",
+            plan_type: selectedMeta.type || "",
+            plan_price: selectedMeta.price || "",
           };
 
           try {
