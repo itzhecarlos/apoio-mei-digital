@@ -27,13 +27,15 @@
               <a class="btn btn-outline-dark" href="./index.html">Voltar para a página inicial</a>
             </div>
 
-            <!-- ? Evita submit padr�o mesmo se JS falhar (n�o navega / n�o d� 404 por POST local) -->
+            <!-- Evita submit padrão mesmo se JS falhar (não navega / não dá 404 por POST local) -->
             <form class="lead-form" action="javascript:void(0)" method="post" novalidate>
               <label for="plano">Selecione o plano</label>
               <select id="plano" name="plano" required>
-                <option value="mensal">Plano Regular Mensal (assinatura) - R$ 29,90</option>
-                <option value="regularizacao-total">Regularização Total (uso único) - R$ 99,90</option>
+                <option value="" disabled selected>Selecione…</option>
+                <option value="monthly">Plano Regular Mensal (assinatura) - R$ 29,90</option>
+                <option value="total_regularization">Regularização Total (uso único) - R$ 99,90</option>
               </select>
+
               <label for="nome-completo">Nome completo</label>
               <input id="nome-completo" name="nome_completo" type="text" autocomplete="name" required />
 
@@ -62,6 +64,7 @@
         </div>
       </section>
     </main>
+
     <div id="loadingOverlay" aria-hidden="true">
       <div class="loading-card">
         <div class="spinner" aria-hidden="true"></div>
@@ -70,21 +73,22 @@
     </div>
 
     <script>
-      // ? Como o script j� est� no final do body, n�o precisa de DOMContentLoaded
+      // Como o script já está no final do body, não precisa de DOMContentLoaded
       const form = document.querySelector(".lead-form");
       const overlay = document.getElementById("loadingOverlay");
       const planSelect = document.getElementById("plano");
 
+      // Metadados do plano (apenas informativo pro front; o n8n decide valor/descrição final)
       const PLAN_META = {
-        mensal: {
+        monthly: {
           label: "Plano Regular Mensal",
           type: "assinatura",
-          price: "29,90",
+          price: "0,90",
         },
-        "regularizacao-total": {
-          label: "Regularizacao Total",
+        total_regularization: {
+          label: "Regularização Total",
           type: "unico",
-          price: "99,90",
+          price: "1,90",
         },
       };
 
@@ -116,10 +120,18 @@
         setFormDisabled(targetForm, false);
       }
 
+      function makeIdempotencyKey(payload) {
+        // Chave por envio para reduzir chance de Pix duplicado se houver clique duplo/retry.
+        const base = `${payload.email}|${payload.cnpj}|${payload.whatsapp}|${payload.plan_code}|${Date.now()}`;
+        let hash = 0;
+        for (let i = 0; i < base.length; i++) hash = (hash * 31 + base.charCodeAt(i)) >>> 0;
+        return `web_${hash}`;
+      }
+
       if (form) {
         if (planSelect) {
           const params = new URLSearchParams(window.location.search);
-          const preselectedPlan = params.get("plano");
+          const preselectedPlan = params.get("plano"); // ex: ?plano=monthly
           if (preselectedPlan && PLAN_META[preselectedPlan]) {
             planSelect.value = preselectedPlan;
           }
@@ -131,17 +143,29 @@
 
           const selectedPlan = planSelect?.value || "";
           const selectedMeta = PLAN_META[selectedPlan] || {};
+
+          // bloqueia envio se não escolher plano
+          if (!selectedPlan) {
+            hideLoading(form);
+            alert("Selecione um plano para continuar.");
+            return;
+          }
+
           const payload = {
             full_name: (document.getElementById("nome-completo")?.value || "").trim(),
             cnpj: onlyDigits(document.getElementById("cnpj")?.value || ""),
             email: (document.getElementById("email")?.value || "").trim(),
             whatsapp: onlyDigits(document.getElementById("celular")?.value || ""),
             consent_lgpd: !!document.getElementById("aceite-lgpd")?.checked,
-            plan: selectedPlan,
+
+            // ✅ campos padronizados pro n8n
+            plan_code: selectedPlan,              // monthly | total_regularization
             plan_label: selectedMeta.label || "",
             plan_type: selectedMeta.type || "",
             plan_price: selectedMeta.price || "",
           };
+
+          payload.idempotency_key = makeIdempotencyKey(payload);
 
           try {
             const response = await fetch(
@@ -155,7 +179,7 @@
               }
             );
 
-            // ? Se a resposta n�o for JSON, evita quebrar o fluxo
+            // Se a resposta não for JSON, evita quebrar o fluxo
             const contentType = response.headers.get("content-type") || "";
             let data = null;
 
@@ -163,7 +187,6 @@
               data = await response.json();
             } else {
               const text = await response.text();
-              // Ajuda a debugar se veio HTML/erro
               console.error("Resposta não-JSON do webhook:", text);
               alert("O servidor retornou uma resposta inesperada. Tente novamente em instantes.");
               return;
@@ -178,12 +201,14 @@
             }
 
             if (data.ok === true) {
+              // Se o backend devolver esses campos (opcional), salvamos pro enviado.html
               if (typeof data.ticket_url === "string") {
                 sessionStorage.setItem("ticket_url", data.ticket_url);
               }
               if (typeof data.qr_code === "string") {
                 sessionStorage.setItem("qr_code", data.qr_code);
               }
+
               window.location.href = "./enviado.html";
               return;
             }
