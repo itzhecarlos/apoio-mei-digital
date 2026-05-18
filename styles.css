@@ -112,6 +112,28 @@ h2 { font-size: clamp(2rem, 4vw, 3rem); margin: 14px 0 16px; }
 .stats h3 { color: var(--secondary); font-size: 2rem; }
 .stats p { color: #e7f4ed; font-size: 0.9rem; }
 
+.top-disclaimer {
+  background: #fff6de;
+  border-top: 1px solid #eed79a;
+  border-bottom: 1px solid #eed79a;
+}
+.top-disclaimer-content {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 0;
+}
+.top-disclaimer-content p {
+  color: #5d4611;
+}
+.top-disclaimer-link {
+  color: var(--primary);
+  font-weight: 800;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
 .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
 .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
 .cards .card {
@@ -229,6 +251,56 @@ details p { color: var(--muted); margin-top: 8px; }
 }
 .disclaimer-box p + p {
   margin-top: 10px;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(18, 49, 38, 0.55);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 1000;
+}
+.modal-overlay.is-open {
+  display: flex;
+}
+.modal-card {
+  position: relative;
+  width: min(640px, 100%);
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  padding: 28px;
+  box-shadow: 0 24px 60px rgba(18, 49, 38, 0.22);
+}
+.modal-card h2 {
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  margin: 12px 0 14px;
+}
+.modal-card p + p {
+  margin-top: 10px;
+}
+.modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 38px;
+  height: 38px;
+  border: 0;
+  border-radius: 999px;
+  background: #eef5f0;
+  color: var(--primary);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 22px;
 }
 
 .footer {
@@ -354,6 +426,8 @@ details p { color: var(--muted); margin-top: 8px; }
   .section { padding: 64px 0; }
   .stats { margin-top: 8px; }
   .plan-grid { grid-template-columns: 1fr; }
+  .top-disclaimer-content { flex-direction: column; align-items: flex-start; }
+  .modal-card { padding: 24px; }
 }
 
 #loadingOverlay {
