@@ -11,6 +11,10 @@
   --hero: linear-gradient(135deg, #174b37 0%, #21664b 60%, #2d7054 100%);
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 * { box-sizing: border-box; }
 body {
   margin: 0;
