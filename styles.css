@@ -210,6 +210,27 @@ details p { color: var(--muted); margin-top: 8px; }
 .center { text-align: center; }
 .center p { color: #e7f4ed; margin: 10px 0 20px; }
 
+.disclaimer-section {
+  padding-top: 56px;
+  padding-bottom: 56px;
+  background: #f7fbf8;
+}
+.disclaimer-box {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-left: 6px solid #c98f19;
+  border-radius: 18px;
+  padding: 28px;
+  box-shadow: 0 10px 30px rgba(18, 49, 38, 0.06);
+}
+.disclaimer-box h2 {
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+  margin: 12px 0 14px;
+}
+.disclaimer-box p + p {
+  margin-top: 10px;
+}
+
 .footer {
   background: var(--primary);
   color: #d7ece1;
