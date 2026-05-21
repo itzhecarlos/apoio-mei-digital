@@ -453,6 +453,9 @@ details p { color: var(--muted); margin-top: 8px; }
 .policy p {
   color: var(--muted);
 }
+.contact-note {
+  margin-top: 24px;
+}
 .policy-date {
   font-size: 0.95rem;
 }
