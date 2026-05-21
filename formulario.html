@@ -6,32 +6,44 @@
     <title>Apoio MEI Digital | Formulário de atendimento</title>
     <meta
       name="description"
-      content="Preencha seus dados para iniciar a regularizacao do seu MEI com atendimento online."
+      content="Preencha seus dados para solicitar atendimento privado de apoio consultivo ao MEI."
     />
     <link rel="icon" href="logo.ico" />
     <link rel="stylesheet" href="./styles.css" />
   </head>
 
-  <body>
+  <body class="page-shell">
+    <header class="simple-header">
+      <div class="container">
+        <a class="brand" href="./index.html">Apoio MEI Digital</a>
+        <a href="./index.html">Voltar para a página inicial</a>
+      </div>
+    </header>
+
     <main class="lead-page">
       <section class="section">
         <div class="container">
           <div class="lead-wrapper">
             <div class="lead-intro">
-              <p class="badge badge-light">Quase lá</p>
-              <h1>Preencha seus dados para iniciar seu atendimento</h1>
+              <p class="badge badge-light">Solicitação de atendimento</p>
+              <h1>Preencha seus dados para iniciar a análise do seu caso</h1>
               <p>
-                Nossa equipe usa essas informações para analisar sua situação e
-                entrar em contato com os próximos passos.
+                Este formulário é destinado ao atendimento privado de apoio consultivo ao MEI.
+                Após o envio, sua solicitação passa por análise inicial para verificarmos se ela se encaixa no escopo do serviço.
               </p>
-              <a class="btn btn-outline-dark" href="./index.html">Voltar para a página inicial</a>
+              <div class="disclaimer-box form-note">
+                <p><strong>Importante:</strong> antes de prosseguir, leia os documentos institucionais e confira se a proposta do serviço faz sentido para a sua necessidade.</p>
+              </div>
+              <div class="hero-actions">
+                <a class="btn btn-outline-dark" href="./politica-privacidade.html">Política de Privacidade</a>
+                <a class="btn btn-outline-dark" href="./termos-de-uso.html">Termos de Uso</a>
+              </div>
             </div>
 
-            <!-- Evita submit padrão mesmo se JS falhar (não navega / não dá 404 por POST local) -->
             <form class="lead-form" action="javascript:void(0)" method="post" novalidate>
               <label for="plano">Selecione o plano</label>
               <select id="plano" name="plano" required>
-                <option value="" disabled selected>Selecione…</option>
+                <option value="" disabled selected>Selecione...</option>
                 <option value="monthly">Plano Regular Mensal (assinatura) - R$ 29,90</option>
                 <option value="total_regularization">Regularização Total (uso único) - R$ 99,90</option>
               </select>
@@ -58,12 +70,33 @@
                 </span>
               </label>
 
+              <label class="consent-line" for="aceite-termos">
+                <input id="aceite-termos" name="aceite_termos" type="checkbox" required />
+                <span>
+                  Li e aceito os
+                  <a href="./termos-de-uso.html" target="_blank" rel="noopener noreferrer">
+                    Termos de Uso
+                  </a>
+                  e a
+                  <a href="./politica-reembolso.html" target="_blank" rel="noopener noreferrer">
+                    Política de Reembolso
+                  </a>
+                </span>
+              </label>
+
               <button class="btn" type="submit">Enviar dados</button>
             </form>
           </div>
         </div>
       </section>
     </main>
+
+    <footer class="footer">
+      <div class="container footer-bottom">
+        <p>&copy; <span id="year"></span> Apoio MEI Digital. Todos os direitos reservados.</p>
+        <p>Serviço privado e independente. Sem vínculo com órgãos públicos.</p>
+      </div>
+    </footer>
 
     <div id="loadingOverlay" aria-hidden="true">
       <div class="loading-card">
@@ -73,22 +106,20 @@
     </div>
 
     <script>
-      // Como o script já está no final do body, não precisa de DOMContentLoaded
       const form = document.querySelector(".lead-form");
       const overlay = document.getElementById("loadingOverlay");
       const planSelect = document.getElementById("plano");
 
-      // Metadados do plano (apenas informativo pro front; o n8n decide valor/descrição final)
       const PLAN_META = {
         monthly: {
           label: "Plano Regular Mensal",
           type: "assinatura",
-          price: "0,90",
+          price: "29,90",
         },
         total_regularization: {
           label: "Regularização Total",
           type: "unico",
-          price: "1,90",
+          price: "99,90",
         },
       };
 
@@ -121,7 +152,6 @@
       }
 
       function makeIdempotencyKey(payload) {
-        // Chave por envio para reduzir chance de Pix duplicado se houver clique duplo/retry.
         const base = `${payload.email}|${payload.cnpj}|${payload.whatsapp}|${payload.plan_code}|${Date.now()}`;
         let hash = 0;
         for (let i = 0; i < base.length; i++) hash = (hash * 31 + base.charCodeAt(i)) >>> 0;
@@ -131,7 +161,7 @@
       if (form) {
         if (planSelect) {
           const params = new URLSearchParams(window.location.search);
-          const preselectedPlan = params.get("plano"); // ex: ?plano=monthly
+          const preselectedPlan = params.get("plano");
           if (preselectedPlan && PLAN_META[preselectedPlan]) {
             planSelect.value = preselectedPlan;
           }
@@ -144,7 +174,6 @@
           const selectedPlan = planSelect?.value || "";
           const selectedMeta = PLAN_META[selectedPlan] || {};
 
-          // bloqueia envio se não escolher plano
           if (!selectedPlan) {
             hideLoading(form);
             alert("Selecione um plano para continuar.");
@@ -157,9 +186,8 @@
             email: (document.getElementById("email")?.value || "").trim(),
             whatsapp: onlyDigits(document.getElementById("celular")?.value || ""),
             consent_lgpd: !!document.getElementById("aceite-lgpd")?.checked,
-
-            // ✅ campos padronizados pro n8n
-            plan_code: selectedPlan,              // monthly | total_regularization
+            consent_terms: !!document.getElementById("aceite-termos")?.checked,
+            plan_code: selectedPlan,
             plan_label: selectedMeta.label || "",
             plan_type: selectedMeta.type || "",
             plan_price: selectedMeta.price || "",
@@ -179,7 +207,6 @@
               }
             );
 
-            // Se a resposta não for JSON, evita quebrar o fluxo
             const contentType = response.headers.get("content-type") || "";
             let data = null;
 
@@ -187,7 +214,7 @@
               data = await response.json();
             } else {
               const text = await response.text();
-              console.error("Resposta não-JSON do webhook:", text);
+              console.error("Resposta não JSON do webhook:", text);
               alert("O servidor retornou uma resposta inesperada. Tente novamente em instantes.");
               return;
             }
@@ -201,7 +228,6 @@
             }
 
             if (data.ok === true) {
-              // Se o backend devolver esses campos (opcional), salvamos pro enviado.html
               if (typeof data.ticket_url === "string") {
                 sessionStorage.setItem("ticket_url", data.ticket_url);
               }
@@ -223,5 +249,6 @@
         });
       }
     </script>
+    <script type="module" src="./script.js"></script>
   </body>
 </html>

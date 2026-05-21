@@ -3,28 +3,34 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Apoio MEI Digital | Enviado</title>
-    <meta name="description" content="Confirmação de envio e pagamento Pix." />
+    <title>Apoio MEI Digital | Confirmação de envio</title>
+    <meta name="description" content="Confirmação de envio e instruções para pagamento Pix." />
     <link rel="icon" href="logo.ico" />
     <link rel="stylesheet" href="./styles.css" />
   </head>
-  <body>
+  <body class="page-shell">
+    <header class="simple-header">
+      <div class="container">
+        <a class="brand" href="./index.html">Apoio MEI Digital</a>
+        <a href="./index.html">Voltar para a página inicial</a>
+      </div>
+    </header>
+
     <main class="lead-page">
       <section class="section">
         <div class="container">
           <div class="lead-wrapper">
             <div class="lead-intro">
-              <p class="badge badge-light">Sucesso</p>
-              <h1>Dados enviados com sucesso! ✅</h1>
+              <p class="badge badge-light">Solicitação recebida</p>
+              <h1>Dados enviados com sucesso</h1>
               <p id="status-msg" style="margin-top: 8px;">
-                Clique abaixo para copiar o Pix ou abrir o pagamento.
+                Se o Pix foi gerado corretamente, use uma das opções abaixo para concluir o pagamento.
               </p>
-              <div id="pix-actions">
+              <div id="pix-actions" class="hero-actions">
                 <button
                   id="copy-btn"
                   class="btn btn-outline-dark"
                   type="button"
-                  style="margin-top: 12px; height: 48px; display: inline-flex; align-items: center;"
                 >
                   Copiar código Pix
                 </button>
@@ -35,9 +41,8 @@
                   href="#"
                   target="_blank"
                   rel="noopener noreferrer"
-                  style="margin-top: 45px; margin-left: 24px; height: 48px; display: inline-flex; align-items: center;"
                 >
-                  Pagar Pix com QR Code agora
+                  Abrir pagamento Pix
                 </a>
               </div>
             </div>
@@ -45,6 +50,13 @@
         </div>
       </section>
     </main>
+
+    <footer class="footer">
+      <div class="container footer-bottom">
+        <p>&copy; <span id="year"></span> Apoio MEI Digital. Todos os direitos reservados.</p>
+        <p>Serviço privado e independente. Sem vínculo com órgãos públicos.</p>
+      </div>
+    </footer>
 
     <script>
       const ticketUrl = sessionStorage.getItem("ticket_url");
@@ -58,23 +70,23 @@
       if (!ticketUrl || !qrCode) {
         if (statusMsg) {
           statusMsg.textContent =
-            "Não encontramos o Pix desta sessão. Volte e envie novamente.";
+            "Não encontramos o Pix desta sessão. Volte ao formulário e tente novamente.";
         }
         if (actions) actions.style.display = "none";
-      } else {
-        if (payLink) payLink.href = ticketUrl;
+      } else if (payLink) {
+        payLink.href = ticketUrl;
       }
 
       if (copyBtn) {
         copyBtn.addEventListener("click", async () => {
           const value = qrCode || "";
           if (!value) {
-            alert("Nenhum código Pix para copiar.");
+            alert("Nenhum código Pix disponível para cópia.");
             return;
           }
           try {
             await navigator.clipboard.writeText(value);
-            alert("Código Pix copiado!");
+            alert("Código Pix copiado.");
           } catch (error) {
             try {
               const helper = document.createElement("textarea");
@@ -86,13 +98,14 @@
               helper.select();
               document.execCommand("copy");
               document.body.removeChild(helper);
-              alert("Código Pix copiado!");
+              alert("Código Pix copiado.");
             } catch (fallbackError) {
-              alert("Não foi possível copiar. Copie manualmente no app do banco.");
+              alert("Não foi possível copiar automaticamente. Copie manualmente no aplicativo do banco.");
             }
           }
         });
       }
     </script>
+    <script type="module" src="./script.js"></script>
   </body>
 </html>
