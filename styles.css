@@ -342,6 +342,12 @@ details p { color: var(--muted); margin-top: 8px; }
   color: #d7ece1;
   text-decoration: none;
 }
+.footer-contact {
+  gap: 6px;
+}
+.footer-contact p {
+  margin: 0;
+}
 .footer-data {
   color: #d7ece1;
 }
