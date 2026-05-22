@@ -431,11 +431,19 @@ details p { color: var(--muted); margin-top: 8px; }
   flex: 0 0 auto;
 }
 .consent-line span {
-  white-space: nowrap;
+  white-space: normal;
 }
 .consent-line a {
   color: var(--primary);
   font-weight: 700;
+}
+.security-notice {
+  color: #8a5a00;
+  background: #fff6de;
+  border: 1px solid #eed79a;
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin: 0 0 18px;
 }
 .btn-outline-dark {
   background: transparent;

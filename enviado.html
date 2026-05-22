@@ -58,54 +58,8 @@
       </div>
     </footer>
 
-    <script>
-      const ticketUrl = sessionStorage.getItem("ticket_url");
-      const qrCode = sessionStorage.getItem("qr_code");
-
-      const statusMsg = document.getElementById("status-msg");
-      const actions = document.getElementById("pix-actions");
-      const payLink = document.getElementById("pay-link");
-      const copyBtn = document.getElementById("copy-btn");
-
-      if (!ticketUrl || !qrCode) {
-        if (statusMsg) {
-          statusMsg.textContent =
-            "Não encontramos o Pix desta sessão. Volte ao formulário e tente novamente.";
-        }
-        if (actions) actions.style.display = "none";
-      } else if (payLink) {
-        payLink.href = ticketUrl;
-      }
-
-      if (copyBtn) {
-        copyBtn.addEventListener("click", async () => {
-          const value = qrCode || "";
-          if (!value) {
-            alert("Nenhum código Pix disponível para cópia.");
-            return;
-          }
-          try {
-            await navigator.clipboard.writeText(value);
-            alert("Código Pix copiado.");
-          } catch (error) {
-            try {
-              const helper = document.createElement("textarea");
-              helper.value = value;
-              helper.style.position = "fixed";
-              helper.style.opacity = "0";
-              document.body.appendChild(helper);
-              helper.focus();
-              helper.select();
-              document.execCommand("copy");
-              document.body.removeChild(helper);
-              alert("Código Pix copiado.");
-            } catch (fallbackError) {
-              alert("Não foi possível copiar automaticamente. Copie manualmente no aplicativo do banco.");
-            }
-          }
-        });
-      }
-    </script>
+    <script type="module" src="/site-config.js"></script>
+    <script type="module" src="./enviado.js"></script>
     <script type="module" src="./script.js"></script>
   </body>
 </html>

@@ -29,18 +29,25 @@
               <h1>Preencha seus dados para iniciar a análise do seu caso</h1>
               <p>
                 Este formulário é destinado ao atendimento privado de apoio consultivo ao MEI.
-                Após o envio, sua solicitação passa por análise inicial para verificarmos se ela se encaixa no escopo do serviço.
+                Após o envio, sua solicitação passa por análise inicial para verificarmos se ela se
+                encaixa no escopo do serviço.
               </p>
               <div class="disclaimer-box form-note">
-                <p><strong>Importante:</strong> antes de prosseguir, leia os documentos institucionais e confira se a proposta do serviço faz sentido para a sua necessidade.</p>
+                <p>
+                  <strong>Importante:</strong> antes de prosseguir, leia os documentos institucionais
+                  e confira se a proposta do serviço faz sentido para a sua necessidade.
+                </p>
               </div>
+              <p id="security-notice" class="security-notice" hidden></p>
               <div class="hero-actions">
-                <a class="btn btn-outline-dark" href="./politica-privacidade.html">Política de Privacidade</a>
+                <a class="btn btn-outline-dark" href="./politica-privacidade.html">
+                  Política de Privacidade
+                </a>
                 <a class="btn btn-outline-dark" href="./termos-de-uso.html">Termos de Uso</a>
               </div>
             </div>
 
-            <form class="lead-form" action="javascript:void(0)" method="post" novalidate>
+            <form class="lead-form" method="post" novalidate>
               <label for="plano">Selecione o plano</label>
               <select id="plano" name="plano" required>
                 <option value="" disabled selected>Selecione...</option>
@@ -105,150 +112,8 @@
       </div>
     </div>
 
-    <script>
-      const form = document.querySelector(".lead-form");
-      const overlay = document.getElementById("loadingOverlay");
-      const planSelect = document.getElementById("plano");
-
-      const PLAN_META = {
-        monthly: {
-          label: "Plano Regular Mensal",
-          type: "assinatura",
-          price: "29,90",
-        },
-        total_regularization: {
-          label: "Regularização Total",
-          type: "unico",
-          price: "99,90",
-        },
-      };
-
-      function onlyDigits(value) {
-        return String(value || "").replace(/\D/g, "");
-      }
-
-      function setFormDisabled(targetForm, isDisabled) {
-        if (!targetForm) return;
-        const fields = targetForm.querySelectorAll("input, select, textarea, button");
-        fields.forEach((field) => {
-          field.disabled = isDisabled;
-        });
-      }
-
-      function showLoading(targetForm) {
-        if (overlay) {
-          overlay.style.display = "flex";
-          overlay.setAttribute("aria-hidden", "false");
-        }
-        setFormDisabled(targetForm, true);
-      }
-
-      function hideLoading(targetForm) {
-        if (overlay) {
-          overlay.style.display = "none";
-          overlay.setAttribute("aria-hidden", "true");
-        }
-        setFormDisabled(targetForm, false);
-      }
-
-      function makeIdempotencyKey(payload) {
-        const base = `${payload.email}|${payload.cnpj}|${payload.whatsapp}|${payload.plan_code}|${Date.now()}`;
-        let hash = 0;
-        for (let i = 0; i < base.length; i++) hash = (hash * 31 + base.charCodeAt(i)) >>> 0;
-        return `web_${hash}`;
-      }
-
-      if (form) {
-        if (planSelect) {
-          const params = new URLSearchParams(window.location.search);
-          const preselectedPlan = params.get("plano");
-          if (preselectedPlan && PLAN_META[preselectedPlan]) {
-            planSelect.value = preselectedPlan;
-          }
-        }
-
-        form.addEventListener("submit", async (event) => {
-          event.preventDefault();
-          showLoading(form);
-
-          const selectedPlan = planSelect?.value || "";
-          const selectedMeta = PLAN_META[selectedPlan] || {};
-
-          if (!selectedPlan) {
-            hideLoading(form);
-            alert("Selecione um plano para continuar.");
-            return;
-          }
-
-          const payload = {
-            full_name: (document.getElementById("nome-completo")?.value || "").trim(),
-            cnpj: onlyDigits(document.getElementById("cnpj")?.value || ""),
-            email: (document.getElementById("email")?.value || "").trim(),
-            whatsapp: onlyDigits(document.getElementById("celular")?.value || ""),
-            consent_lgpd: !!document.getElementById("aceite-lgpd")?.checked,
-            consent_terms: !!document.getElementById("aceite-termos")?.checked,
-            plan_code: selectedPlan,
-            plan_label: selectedMeta.label || "",
-            plan_type: selectedMeta.type || "",
-            plan_price: selectedMeta.price || "",
-          };
-
-          payload.idempotency_key = makeIdempotencyKey(payload);
-
-          try {
-            const response = await fetch(
-              "https://apoiomeidigital.app.n8n.cloud/webhook/leat-to-pix",
-              {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify(payload),
-              }
-            );
-
-            const contentType = response.headers.get("content-type") || "";
-            let data = null;
-
-            if (contentType.includes("application/json")) {
-              data = await response.json();
-            } else {
-              const text = await response.text();
-              console.error("Resposta não JSON do webhook:", text);
-              alert("O servidor retornou uma resposta inesperada. Tente novamente em instantes.");
-              return;
-            }
-
-            if (!response.ok || !data || data.ok === false) {
-              const errorText = Array.isArray(data?.errors)
-                ? data.errors.join("\n")
-                : data?.message || "Não foi possível enviar os dados. Tente novamente.";
-              alert(errorText);
-              return;
-            }
-
-            if (data.ok === true) {
-              if (typeof data.ticket_url === "string") {
-                sessionStorage.setItem("ticket_url", data.ticket_url);
-              }
-              if (typeof data.qr_code === "string") {
-                sessionStorage.setItem("qr_code", data.qr_code);
-              }
-
-              window.location.href = "./enviado.html";
-              return;
-            }
-
-            alert("Pix gerado, mas não recebemos os dados esperados. Tente novamente.");
-          } catch (error) {
-            console.error(error);
-            alert("Erro de conexão. Verifique sua internet e tente novamente.");
-          } finally {
-            hideLoading(form);
-          }
-        });
-      }
-    </script>
+    <script type="module" src="/site-config.js"></script>
+    <script type="module" src="./formulario.js"></script>
     <script type="module" src="./script.js"></script>
   </body>
 </html>
