@@ -8,7 +8,7 @@ function mapStatusMessage(status) {
     case "approved":
       return "Pagamento aprovado com sucesso.";
     case "pending":
-      return "Pagamento pendente. Aguarde a confirmação do Mercado Pago.";
+      return "Pagamento pendente. Aguarde a confirmacao do Mercado Pago.";
     case "in_process":
       return "Pagamento em processamento.";
     default:
@@ -40,12 +40,29 @@ export async function handler(event) {
     const payment = await createPayment(session, body.form_data || {});
     const artifacts = extractPaymentArtifacts(payment);
 
+    console.log("Pagamento criado no Mercado Pago.", {
+      payment_id: payment.id,
+      payment_status: payment.status,
+      payment_status_detail: payment.status_detail,
+    });
+
     if (payment.status === "pending" || payment.status === "in_process") {
       try {
-        await sendPaymentPendingWebhook({ session, payment });
+        const automationResponse = await sendPaymentPendingWebhook({ session, payment });
+        console.log("Webhook de pagamento pendente chamado.", {
+          payment_id: payment.id,
+          payment_status: payment.status,
+          n8n_called: true,
+          n8n_status: automationResponse?.status ?? null,
+        });
       } catch (automationError) {
-        console.error("Falha ao disparar webhook de automação pendente:", automationError);
+        console.error("Falha ao disparar webhook de automacao pendente:", automationError);
       }
+    } else {
+      console.log("Pagamento nao esta pendente. Webhook de pendencia nao chamado.", {
+        payment_id: payment.id,
+        payment_status: payment.status,
+      });
     }
 
     return json(200, {
@@ -61,7 +78,7 @@ export async function handler(event) {
     console.error(error);
     return json(500, {
       ok: false,
-      message: error.message || "Não foi possível processar o pagamento.",
+      message: error.message || "Nao foi possivel processar o pagamento.",
     });
   }
 }

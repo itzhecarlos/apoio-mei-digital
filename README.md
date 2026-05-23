@@ -63,10 +63,14 @@ Cadastre estas variaveis no painel da Netlify:
   - access token da sua aplicacao Mercado Pago
 - `CHECKOUT_SESSION_SECRET`
   - segredo aleatorio usado para assinar a sessao de checkout
-- `N8N_WHATSAPP_PAYMENT_CONFIRMED_WEBHOOK`
+- `N8N_PAYMENT_CONFIRMED_WEBHOOK_URL`
   - opcional, substitui a URL padrao do webhook de automacao para pagamento aprovado
-- `N8N_WHATSAPP_PAYMENT_PENDING_WEBHOOK`
+- `N8N_PAYMENT_PENDING_WEBHOOK_URL`
   - opcional, webhook para pagamentos pendentes/em processamento; se nao for definido, usa o mesmo do confirmado
+- `N8N_WHATSAPP_PAYMENT_CONFIRMED_WEBHOOK`
+  - legado, ainda aceito como fallback para compatibilidade
+- `N8N_WHATSAPP_PAYMENT_PENDING_WEBHOOK`
+  - legado, ainda aceito como fallback para compatibilidade
 - `MERCADO_PAGO_WEBHOOK_URL`
   - opcional, substitui a URL padrao `https://pay.apoiomeidigital.com.br/api/mercado-pago/webhook`
 
