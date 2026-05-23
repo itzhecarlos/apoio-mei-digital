@@ -5,11 +5,11 @@ import { createSessionToken } from "./_lib/session.js";
 const PLAN_PRICING = {
   monthly: {
     label: "Plano Regular Mensal",
-    amount: 29.9,
+    amount: 0.9,
   },
   total_regularization: {
     label: "Regularização Total",
-    amount: 99.9,
+    amount: 1.9,
   },
 };
 

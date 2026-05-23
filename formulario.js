@@ -15,12 +15,12 @@ const PLAN_META = {
   monthly: {
     label: "Plano Regular Mensal",
     type: "assinatura",
-    price: "29,90",
+    price: "0,90",
   },
   total_regularization: {
     label: "Regularização Total",
     type: "unico",
-    price: "99,90",
+    price: "1,90",
   },
 };
 
