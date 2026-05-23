@@ -15,3 +15,13 @@
   from = "/api/process-payment"
   to = "/.netlify/functions/process-payment"
   status = 200
+
+[[redirects]]
+  from = "/api/payment-status"
+  to = "/.netlify/functions/payment-status"
+  status = 200
+
+[[redirects]]
+  from = "/api/mercado-pago/webhook"
+  to = "/.netlify/functions/mercado-pago-webhook"
+  status = 200

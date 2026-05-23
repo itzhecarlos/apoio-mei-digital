@@ -23,6 +23,7 @@ Antes de publicar, revise `public/site-config.js`.
 - `paymentApiPath`: deve apontar para um endpoint do proprio dominio, como `/api/create-payment-session`
 - `paymentSessionApiPath`: endpoint `GET` que devolve os dados da sessao para o checkout
 - `processPaymentApiPath`: endpoint `POST` que recebe o envio final do Payment Brick
+- `paymentStatusApiPath`: endpoint `GET` para reconsultar o status do pagamento e atualizar a tela automaticamente
 - `checkoutPath`: caminho da pagina hospedada no subdominio `pay.`
 - `mercadoPagoPublicKey`: chave publica do Mercado Pago usada no Brick
 - `allowedPaymentHosts`: lista de dominios autorizados para abrir o checkout/Pix
@@ -64,5 +65,9 @@ Cadastre estas variaveis no painel da Netlify:
   - segredo aleatorio usado para assinar a sessao de checkout
 - `N8N_WHATSAPP_PAYMENT_CONFIRMED_WEBHOOK`
   - opcional, substitui a URL padrao do webhook de automacao para pagamento aprovado
+- `N8N_WHATSAPP_PAYMENT_PENDING_WEBHOOK`
+  - opcional, webhook para pagamentos pendentes/em processamento; se nao for definido, usa o mesmo do confirmado
+- `MERCADO_PAGO_WEBHOOK_URL`
+  - opcional, substitui a URL padrao `https://pay.apoiomeidigital.com.br/api/mercado-pago/webhook`
 
 As funcoes serverless foram criadas em `netlify/functions/` e o roteamento de `/api/*` esta em `netlify.toml`.

@@ -1,7 +1,6 @@
-import { json, badMethod, parseJsonBody } from "./_lib/http.js";
+import { json, badMethod } from "./_lib/http.js";
 import { readSessionToken } from "./_lib/session.js";
-import { createPayment } from "./_lib/mercadopago.js";
-import { sendPaymentPendingWebhook } from "./_lib/automation.js";
+import { getPaymentById } from "./_lib/mercadopago.js";
 
 function mapStatusMessage(status) {
   switch (status) {
@@ -32,21 +31,34 @@ function extractPaymentArtifacts(payment) {
 }
 
 export async function handler(event) {
-  if (event.httpMethod !== "POST") return badMethod();
+  if (event.httpMethod !== "GET") return badMethod();
 
   try {
-    const body = parseJsonBody(event.body);
-    const session = readSessionToken(body.session_id || "");
-    const payment = await createPayment(session, body.form_data || {});
-    const artifacts = extractPaymentArtifacts(payment);
+    const sessionToken = event.queryStringParameters?.session || "";
+    const paymentId = event.queryStringParameters?.payment_id || "";
+    const session = readSessionToken(sessionToken);
 
-    if (payment.status === "pending" || payment.status === "in_process") {
-      try {
-        await sendPaymentPendingWebhook({ session, payment });
-      } catch (automationError) {
-        console.error("Falha ao disparar webhook de automação pendente:", automationError);
-      }
+    if (!paymentId) {
+      return json(400, {
+        ok: false,
+        message: "payment_id é obrigatório para consultar o status.",
+      });
     }
+
+    const payment = await getPaymentById(paymentId);
+
+    if (
+      session.external_reference &&
+      payment.external_reference &&
+      payment.external_reference !== session.external_reference
+    ) {
+      return json(403, {
+        ok: false,
+        message: "Pagamento não pertence a esta sessão.",
+      });
+    }
+
+    const artifacts = extractPaymentArtifacts(payment);
 
     return json(200, {
       ok: true,
@@ -61,7 +73,7 @@ export async function handler(event) {
     console.error(error);
     return json(500, {
       ok: false,
-      message: error.message || "Não foi possível processar o pagamento.",
+      message: error.message || "Não foi possível consultar o status do pagamento.",
     });
   }
 }

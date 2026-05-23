@@ -1,5 +1,8 @@
 const MERCADO_PAGO_BASE_URL = "https://api.mercadopago.com";
 const ACCESS_TOKEN = process.env.MERCADO_PAGO_ACCESS_TOKEN || "";
+const MERCADO_PAGO_WEBHOOK_URL =
+  process.env.MERCADO_PAGO_WEBHOOK_URL ||
+  "https://pay.apoiomeidigital.com.br/api/mercado-pago/webhook";
 
 function pruneUndefined(value) {
   if (Array.isArray(value)) {
@@ -56,6 +59,12 @@ async function mercadoPagoRequest(path, payload, options = {}) {
   return data;
 }
 
+export async function getPaymentById(paymentId) {
+  return mercadoPagoRequest(`/v1/payments/${paymentId}`, undefined, {
+    method: "GET",
+  });
+}
+
 export async function createPreference(session) {
   const body = {
     items: [
@@ -73,11 +82,15 @@ export async function createPreference(session) {
       email: session.email,
     },
     external_reference: session.external_reference,
+    notification_url: MERCADO_PAGO_WEBHOOK_URL,
     metadata: {
       plan_code: session.plan_code,
       plan_type: session.plan_type,
       cnpj: session.cnpj,
       payer_cpf: session.payer_cpf,
+      full_name: session.full_name,
+      whatsapp: session.whatsapp,
+      email: session.email,
     },
   };
 
@@ -105,11 +118,17 @@ export async function createPayment(session, formData) {
       },
     },
     external_reference: session.external_reference,
+    notification_url: MERCADO_PAGO_WEBHOOK_URL,
     metadata: {
       session_id: session.session_id,
       plan_code: session.plan_code,
       cnpj: session.cnpj,
       payer_cpf: session.payer_cpf,
+      full_name: session.full_name,
+      whatsapp: session.whatsapp,
+      email: session.email,
+      plan_label: session.plan_label,
+      plan_type: session.plan_type,
     },
   });
 

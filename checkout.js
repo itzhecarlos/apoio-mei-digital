@@ -1,6 +1,7 @@
 const appConfig = window.APP_CONFIG || {};
 const PAYMENT_SESSION_API_PATH = appConfig.paymentSessionApiPath || "/api/payment-session";
 const PROCESS_PAYMENT_API_PATH = appConfig.processPaymentApiPath || "/api/process-payment";
+const PAYMENT_STATUS_API_PATH = appConfig.paymentStatusApiPath || "/api/payment-status";
 const CHECKOUT_PATH = appConfig.checkoutPath || "/checkout.html";
 const MERCADO_PAGO_PUBLIC_KEY = appConfig.mercadoPagoPublicKey || "";
 const ALLOWED_PAYMENT_HOSTS = Array.isArray(appConfig.allowedPaymentHosts)
@@ -149,6 +150,8 @@ async function renderBrick(sessionData) {
 
         savePaymentResult({
           payment_id: result.payment_id || "",
+          session_token: sessionData.session_token || "",
+          payment_status_api_path: PAYMENT_STATUS_API_PATH,
           status: result.status || "",
           status_detail: result.status_detail || "",
           message: result.message || "",
