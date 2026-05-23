@@ -35,6 +35,10 @@ function isAllowedHost(hostname) {
   return ALLOWED_PAYMENT_HOSTS.includes(String(hostname || "").toLowerCase());
 }
 
+function savePaymentResult(result) {
+  sessionStorage.setItem("payment_result", JSON.stringify(result));
+}
+
 function ensurePaymentHost() {
   if (ALLOWED_PAYMENT_HOSTS.length === 0) {
     showWarning("Nenhum host de pagamento autorizado foi configurado.");
@@ -118,7 +122,6 @@ async function renderBrick(sessionData) {
         bankTransfer: "all",
         creditCard: "all",
         debitCard: "all",
-        mercadoPago: "all",
       },
     },
     callbacks: {
@@ -144,18 +147,33 @@ async function renderBrick(sessionData) {
           throw new Error(result?.message || "Não foi possível processar o pagamento.");
         }
 
+        savePaymentResult({
+          payment_id: result.payment_id || "",
+          status: result.status || "",
+          status_detail: result.status_detail || "",
+          message: result.message || "",
+          qr_code: result.qr_code || "",
+          ticket_url: result.ticket_url || "",
+          plan_label: sessionData.plan_label || "",
+          full_name: sessionData.full_name || "",
+          email: sessionData.email || "",
+          amount: sessionData.amount || 0,
+        });
+
         if (typeof result.redirect_url === "string" && result.redirect_url) {
           window.location.href = result.redirect_url;
+          return;
         }
 
-        setStatus(
-          "Pagamento enviado ao Mercado Pago. Acompanhe o status final na confirmação exibida pelo backend."
-        );
+        window.location.href = "./enviado.html";
       },
       onError: (error) => {
         console.error(error);
         showWarning(
           "O checkout encontrou um erro. Verifique a sessão no backend e a configuração do Mercado Pago."
+        );
+        alert(
+          "O pagamento não foi concluído. Selecione Pix, boleto, cartão de crédito ou débito e, se o erro persistir, consulte os logs da função process-payment na Netlify."
         );
       },
     },

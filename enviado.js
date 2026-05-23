@@ -5,6 +5,7 @@ const ALLOWED_PAYMENT_HOSTS = Array.isArray(appConfig.allowedPaymentHosts)
       .filter(Boolean)
   : [];
 
+const statusTitle = document.getElementById("status-title");
 const statusMsg = document.getElementById("status-msg");
 const actions = document.getElementById("pix-actions");
 const payLink = document.getElementById("pay-link");
@@ -14,9 +15,9 @@ function hideActions() {
   if (actions) actions.style.display = "none";
 }
 
-function loadPaymentSession() {
+function loadPaymentResult() {
   try {
-    return JSON.parse(sessionStorage.getItem("payment_session") || "null");
+    return JSON.parse(sessionStorage.getItem("payment_result") || "null");
   } catch {
     return null;
   }
@@ -33,24 +34,54 @@ function isAllowedPaymentUrl(value) {
   }
 }
 
-const paymentSession = loadPaymentSession();
-const ticketUrl = paymentSession?.ticket_url || "";
-const qrCode = paymentSession?.qr_code || "";
+function applyStatus(result) {
+  const status = result?.status || "";
 
-if (!ticketUrl || !qrCode) {
+  if (status === "approved") {
+    if (statusTitle) statusTitle.textContent = "Pagamento aprovado";
+    if (statusMsg) statusMsg.textContent = result.message || "Seu pagamento foi aprovado com sucesso.";
+    hideActions();
+    return;
+  }
+
+  if (status === "pending" || status === "in_process") {
+    if (statusTitle) statusTitle.textContent = "Pagamento pendente";
+    if (statusMsg) {
+      statusMsg.textContent =
+        result.message || "Siga as instruções abaixo para concluir ou acompanhar o pagamento.";
+    }
+    return;
+  }
+
+  if (statusTitle) statusTitle.textContent = "Pagamento recebido";
+  if (statusMsg) statusMsg.textContent = result?.message || "Recebemos seu pagamento para análise.";
+}
+
+const paymentResult = loadPaymentResult();
+const ticketUrl = paymentResult?.ticket_url || "";
+const qrCode = paymentResult?.qr_code || "";
+
+if (!paymentResult) {
+  if (statusTitle) statusTitle.textContent = "Pagamento não encontrado";
   if (statusMsg) {
     statusMsg.textContent =
-      "Não encontramos o Pix desta sessão. Volte ao formulário e tente novamente.";
+      "Não encontramos o resultado desta sessão. Volte ao formulário e tente novamente.";
   }
   hideActions();
-} else if (!isAllowedPaymentUrl(ticketUrl)) {
-  if (statusMsg) {
-    statusMsg.textContent =
-      "O link de pagamento desta sessão foi bloqueado por segurança. Solicite uma nova análise.";
+} else {
+  applyStatus(paymentResult);
+
+  if (!ticketUrl && !qrCode) {
+    hideActions();
+  } else if (!isAllowedPaymentUrl(ticketUrl)) {
+    if (statusMsg) {
+      statusMsg.textContent =
+        "O link de pagamento desta sessão foi bloqueado por segurança. Solicite uma nova análise.";
+    }
+    hideActions();
+  } else if (payLink) {
+    payLink.href = ticketUrl;
   }
-  hideActions();
-} else if (payLink) {
-  payLink.href = ticketUrl;
 }
 
 if (copyBtn) {

@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Apoio MEI Digital | Confirmação de envio</title>
-    <meta name="description" content="Confirmação de envio e instruções para pagamento Pix." />
+    <title>Apoio MEI Digital | Status do pagamento</title>
+    <meta name="description" content="Status do pagamento e instruções de conclusão." />
     <link rel="icon" href="logo.ico" />
     <link rel="stylesheet" href="./styles.css" />
   </head>
@@ -21,28 +21,17 @@
         <div class="container">
           <div class="lead-wrapper">
             <div class="lead-intro">
-              <p class="badge badge-light">Solicitação recebida</p>
-              <h1>Dados enviados com sucesso</h1>
+              <p class="badge badge-light">Pagamento</p>
+              <h1 id="status-title">Processando confirmação</h1>
               <p id="status-msg" style="margin-top: 8px;">
-                Se o Pix foi gerado corretamente, use uma das opções abaixo para concluir o pagamento.
+                Estamos preparando as instruções do seu pagamento.
               </p>
               <div id="pix-actions" class="hero-actions">
-                <button
-                  id="copy-btn"
-                  class="btn btn-outline-dark"
-                  type="button"
-                >
+                <button id="copy-btn" class="btn btn-outline-dark" type="button">
                   Copiar código Pix
                 </button>
-
-                <a
-                  id="pay-link"
-                  class="btn"
-                  href="#"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Abrir pagamento Pix
+                <a id="pay-link" class="btn" href="#" target="_blank" rel="noopener noreferrer">
+                  Abrir pagamento
                 </a>
               </div>
             </div>
@@ -58,7 +47,7 @@
       </div>
     </footer>
 
-    <script type="module" src="/site-config.js"></script>
+    <script src="/site-config.js"></script>
     <script type="module" src="./enviado.js"></script>
     <script type="module" src="./script.js"></script>
   </body>

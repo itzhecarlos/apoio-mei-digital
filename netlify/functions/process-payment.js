@@ -15,6 +15,21 @@ function mapStatusMessage(status) {
   }
 }
 
+function extractPaymentArtifacts(payment) {
+  const transactionData = payment?.point_of_interaction?.transaction_data || {};
+  const qrCode = transactionData.qr_code || transactionData.qr_code_base64 || "";
+  const ticketUrl =
+    transactionData.ticket_url ||
+    transactionData.external_resource_url ||
+    payment?.transaction_details?.external_resource_url ||
+    "";
+
+  return {
+    qr_code: qrCode,
+    ticket_url: ticketUrl,
+  };
+}
+
 export async function handler(event) {
   if (event.httpMethod !== "POST") return badMethod();
 
@@ -22,6 +37,7 @@ export async function handler(event) {
     const body = parseJsonBody(event.body);
     const session = readSessionToken(body.session_id || "");
     const payment = await createPayment(session, body.form_data || {});
+    const artifacts = extractPaymentArtifacts(payment);
 
     return json(200, {
       ok: true,
@@ -29,6 +45,8 @@ export async function handler(event) {
       status: payment.status,
       status_detail: payment.status_detail,
       message: mapStatusMessage(payment.status),
+      qr_code: artifacts.qr_code,
+      ticket_url: artifacts.ticket_url,
     });
   } catch (error) {
     console.error(error);
