@@ -77,6 +77,7 @@ export async function createPreference(session) {
       plan_code: session.plan_code,
       plan_type: session.plan_type,
       cnpj: session.cnpj,
+      payer_cpf: session.payer_cpf,
     },
   };
 
@@ -98,13 +99,17 @@ export async function createPayment(session, formData) {
     payer: {
       email: formData.payer?.email || session.email,
       first_name: session.full_name,
-      identification: formData.payer?.identification,
+      identification: formData.payer?.identification || {
+        type: "CPF",
+        number: session.payer_cpf,
+      },
     },
     external_reference: session.external_reference,
     metadata: {
       session_id: session.session_id,
       plan_code: session.plan_code,
       cnpj: session.cnpj,
+      payer_cpf: session.payer_cpf,
     },
   });
 

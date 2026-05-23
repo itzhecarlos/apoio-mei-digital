@@ -39,6 +39,7 @@ export async function handler(event) {
       email: String(body.email || "").trim(),
       whatsapp: String(body.whatsapp || "").trim(),
       cnpj: String(body.cnpj || "").trim(),
+      payer_cpf: String(body.payer_cpf || "").trim(),
       plan_code: body.plan_code,
       plan_label: pricing.label,
       plan_type: body.plan_type || "",
@@ -46,10 +47,10 @@ export async function handler(event) {
       expires_at: Date.now() + 30 * 60 * 1000,
     };
 
-    if (!sessionPayload.full_name || !sessionPayload.email) {
+    if (!sessionPayload.full_name || !sessionPayload.email || sessionPayload.payer_cpf.length !== 11) {
       return json(400, {
         ok: false,
-        message: "Nome e e-mail são obrigatórios para iniciar o checkout.",
+        message: "Nome, e-mail e CPF do pagador são obrigatórios para iniciar o checkout.",
       });
     }
 

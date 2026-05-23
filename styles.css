@@ -415,6 +415,11 @@ details p { color: var(--muted); margin-top: 8px; }
   outline: 2px solid #cbe6d7;
   border-color: #9bcfb4;
 }
+.field-hint {
+  margin: -2px 0 8px;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
 .consent-line {
   display: flex;
   gap: 12px;

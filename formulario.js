@@ -114,6 +114,7 @@ if (form) {
     const payload = {
       full_name: (document.getElementById("nome-completo")?.value || "").trim(),
       cnpj: onlyDigits(document.getElementById("cnpj")?.value || ""),
+      payer_cpf: onlyDigits(document.getElementById("cpf-pagador")?.value || ""),
       email: (document.getElementById("email")?.value || "").trim(),
       whatsapp: onlyDigits(document.getElementById("celular")?.value || ""),
       consent_lgpd: !!document.getElementById("aceite-lgpd")?.checked,
@@ -123,6 +124,11 @@ if (form) {
       plan_type: selectedMeta.type || "",
       plan_price: selectedMeta.price || "",
     };
+
+    if (payload.payer_cpf.length !== 11) {
+      alert("Informe o CPF do pagador com 11 dígitos para gerar o pagamento.");
+      return;
+    }
 
     payload.idempotency_key = makeIdempotencyKey(payload);
 
