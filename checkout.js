@@ -136,7 +136,7 @@ async function renderBrick(sessionData) {
             Accept: "application/json",
           },
           body: JSON.stringify({
-            session_id: sessionData.session_id,
+            session_id: sessionData.session_token || sessionData.session_id,
             selected_payment_method: selectedPaymentMethod,
             form_data: formData,
           }),

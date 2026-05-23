@@ -6,14 +6,15 @@ export async function handler(event) {
   if (event.httpMethod !== "GET") return badMethod();
 
   try {
-    const sessionId = event.queryStringParameters?.session || "";
-    const session = readSessionToken(sessionId);
+    const sessionToken = event.queryStringParameters?.session || "";
+    const session = readSessionToken(sessionToken);
     const preference = await createPreference(session);
 
     return json(200, {
       ok: true,
       session: {
         ...session,
+        session_token: sessionToken,
         preference_id: preference.id,
       },
     });
