@@ -1,6 +1,7 @@
 import { json, badMethod, parseJsonBody } from "./_lib/http.js";
 import { readSessionToken } from "./_lib/session.js";
 import { createPayment } from "./_lib/mercadopago.js";
+import { sendPaymentConfirmedWebhook } from "./_lib/automation.js";
 
 function mapStatusMessage(status) {
   switch (status) {
@@ -38,6 +39,14 @@ export async function handler(event) {
     const session = readSessionToken(body.session_id || "");
     const payment = await createPayment(session, body.form_data || {});
     const artifacts = extractPaymentArtifacts(payment);
+
+    if (payment.status === "approved") {
+      try {
+        await sendPaymentConfirmedWebhook({ session, payment });
+      } catch (automationError) {
+        console.error("Falha ao disparar webhook de automação:", automationError);
+      }
+    }
 
     return json(200, {
       ok: true,

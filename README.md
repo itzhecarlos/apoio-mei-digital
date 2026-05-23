@@ -62,5 +62,7 @@ Cadastre estas variaveis no painel da Netlify:
   - access token da sua aplicacao Mercado Pago
 - `CHECKOUT_SESSION_SECRET`
   - segredo aleatorio usado para assinar a sessao de checkout
+- `N8N_WHATSAPP_PAYMENT_CONFIRMED_WEBHOOK`
+  - opcional, substitui a URL padrao do webhook de automacao para pagamento aprovado
 
 As funcoes serverless foram criadas em `netlify/functions/` e o roteamento de `/api/*` esta em `netlify.toml`.
