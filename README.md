@@ -26,6 +26,7 @@ Antes de publicar, revise `public/site-config.js`.
 - `checkoutPath`: caminho da pagina hospedada no subdominio `pay.`
 - `mercadoPagoPublicKey`: chave publica do Mercado Pago usada no Brick
 - `allowedPaymentHosts`: lista de dominios autorizados para abrir o checkout/Pix
+- `allowedExternalPaymentHosts`: dominios externos confiaveis permitidos para instrucoes pendentes do Mercado Pago
 
 O frontend bloqueia links de pagamento fora dessa allowlist.
 

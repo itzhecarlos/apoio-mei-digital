@@ -4,6 +4,11 @@ const ALLOWED_PAYMENT_HOSTS = Array.isArray(appConfig.allowedPaymentHosts)
       .map((host) => String(host || "").trim().toLowerCase())
       .filter(Boolean)
   : [];
+const ALLOWED_EXTERNAL_PAYMENT_HOSTS = Array.isArray(appConfig.allowedExternalPaymentHosts)
+  ? appConfig.allowedExternalPaymentHosts
+      .map((host) => String(host || "").trim().toLowerCase())
+      .filter(Boolean)
+  : [];
 
 const statusTitle = document.getElementById("status-title");
 const statusMsg = document.getElementById("status-msg");
@@ -23,12 +28,25 @@ function loadPaymentResult() {
   }
 }
 
-function isAllowedPaymentUrl(value) {
+function hostMatchesAllowedList(hostname, allowedHosts) {
+  return allowedHosts.some((allowedHost) =>
+    hostname === allowedHost || hostname.endsWith(`.${allowedHost}`)
+  );
+}
+
+function isAllowedPaymentUrl(value, options = {}) {
   if (!value || ALLOWED_PAYMENT_HOSTS.length === 0) return false;
 
   try {
     const parsedUrl = new URL(value);
-    return ALLOWED_PAYMENT_HOSTS.includes(parsedUrl.hostname.toLowerCase());
+    const hostname = parsedUrl.hostname.toLowerCase();
+
+    if (hostMatchesAllowedList(hostname, ALLOWED_PAYMENT_HOSTS)) return true;
+    if (options.allowExternal === true) {
+      return hostMatchesAllowedList(hostname, ALLOWED_EXTERNAL_PAYMENT_HOSTS);
+    }
+
+    return false;
   } catch {
     return false;
   }
@@ -70,10 +88,12 @@ if (!paymentResult) {
   hideActions();
 } else {
   applyStatus(paymentResult);
+  const allowExternalPaymentLink =
+    paymentResult?.status === "pending" || paymentResult?.status === "in_process";
 
   if (!ticketUrl && !qrCode) {
     hideActions();
-  } else if (!isAllowedPaymentUrl(ticketUrl)) {
+  } else if (!isAllowedPaymentUrl(ticketUrl, { allowExternal: allowExternalPaymentLink })) {
     if (statusMsg) {
       statusMsg.textContent =
         "O link de pagamento desta sessão foi bloqueado por segurança. Solicite uma nova análise.";
