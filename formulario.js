@@ -9,7 +9,6 @@ const ALLOWED_PAYMENT_HOSTS = Array.isArray(appConfig.allowedPaymentHosts)
 const form = document.querySelector(".lead-form");
 const overlay = document.getElementById("loadingOverlay");
 const planSelect = document.getElementById("plano");
-const securityNotice = document.getElementById("security-notice");
 
 const PLAN_META = {
   monthly: {
@@ -78,21 +77,6 @@ function savePaymentSession(data) {
   sessionStorage.setItem("payment_session", JSON.stringify(data));
 }
 
-function showSecurityNotice(message) {
-  if (!securityNotice) return;
-  securityNotice.hidden = false;
-  securityNotice.textContent = message;
-}
-
-if (securityNotice) {
-  if (ALLOWED_PAYMENT_HOSTS.length === 0) {
-    showSecurityNotice(
-      "Configuração pendente: defina os domínios autorizados de pagamento em site-config.js antes de publicar."
-    );
-  } else {
-    securityNotice.hidden = true;
-  }
-}
 
 if (form) {
   if (planSelect) {
