@@ -1,0 +1,17 @@
+[build]
+  publish = "dist"
+
+[[redirects]]
+  from = "/api/create-payment-session"
+  to = "/.netlify/functions/create-payment-session"
+  status = 200
+
+[[redirects]]
+  from = "/api/payment-session"
+  to = "/.netlify/functions/payment-session"
+  status = 200
+
+[[redirects]]
+  from = "/api/process-payment"
+  to = "/.netlify/functions/process-payment"
+  status = 200

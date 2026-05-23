@@ -11,6 +11,7 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, "index.html"),
         formulario: resolve(__dirname, "formulario.html"),
+        checkout: resolve(__dirname, "checkout.html"),
         enviado: resolve(__dirname, "enviado.html"),
         contato: resolve(__dirname, "contato.html"),
         sobre: resolve(__dirname, "sobre.html"),

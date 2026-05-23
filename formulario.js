@@ -1,5 +1,6 @@
 const appConfig = window.APP_CONFIG || {};
-const PAYMENT_API_PATH = appConfig.paymentApiPath || "/api/create-payment";
+const PAYMENT_API_PATH = appConfig.paymentApiPath || "/api/create-payment-session";
+const CHECKOUT_PATH = appConfig.checkoutPath || "/checkout.html";
 const ALLOWED_PAYMENT_HOSTS = Array.isArray(appConfig.allowedPaymentHosts)
   ? appConfig.allowedPaymentHosts
       .map((host) => String(host || "").trim().toLowerCase())
@@ -62,6 +63,14 @@ function makeIdempotencyKey(payload) {
   return `web_${hash}`;
 }
 
+function buildCheckoutUrl(sessionId) {
+  if (!sessionId || ALLOWED_PAYMENT_HOSTS.length === 0) return "";
+  const paymentHost = ALLOWED_PAYMENT_HOSTS[0];
+  const checkoutUrl = new URL(`https://${paymentHost}${CHECKOUT_PATH}`);
+  checkoutUrl.searchParams.set("session", sessionId);
+  return checkoutUrl.toString();
+}
+
 function isAllowedPaymentUrl(value) {
   if (!value || ALLOWED_PAYMENT_HOSTS.length === 0) return false;
 
@@ -73,10 +82,9 @@ function isAllowedPaymentUrl(value) {
   }
 }
 
-function savePaymentSession(data) {
-  sessionStorage.setItem("payment_session", JSON.stringify(data));
+function saveLeadSession(data) {
+  sessionStorage.setItem("lead_session", JSON.stringify(data));
 }
-
 
 if (form) {
   if (planSelect) {
@@ -137,7 +145,7 @@ if (form) {
         data = await response.json();
       } else {
         const text = await response.text();
-        console.error("Resposta não JSON do endpoint de pagamento:", text);
+        console.error("Resposta não JSON do endpoint de sessão:", text);
         alert("O servidor retornou uma resposta inesperada. Tente novamente em instantes.");
         return;
       }
@@ -145,26 +153,32 @@ if (form) {
       if (!response.ok || !data || data.ok === false) {
         const errorText = Array.isArray(data?.errors)
           ? data.errors.join("\n")
-          : data?.message || "Não foi possível enviar os dados. Tente novamente.";
+          : data?.message || "Não foi possível iniciar o checkout. Tente novamente.";
         alert(errorText);
         return;
       }
 
-      if (!isAllowedPaymentUrl(data.ticket_url)) {
-        console.error("Destino de pagamento bloqueado:", data?.ticket_url);
+      const checkoutUrl =
+        typeof data.checkout_url === "string" && isAllowedPaymentUrl(data.checkout_url)
+          ? data.checkout_url
+          : buildCheckoutUrl(data.session_id);
+
+      if (!checkoutUrl || !isAllowedPaymentUrl(checkoutUrl)) {
+        console.error("Destino de checkout bloqueado:", data?.checkout_url, data?.session_id);
         alert(
-          "Bloqueamos um destino de pagamento não autorizado. Nosso time foi notificado para revisar o fluxo."
+          "Não conseguimos montar um checkout autorizado para esta solicitação. Revise a configuração do backend."
         );
         return;
       }
 
-      savePaymentSession({
-        ticket_url: data.ticket_url,
-        qr_code: typeof data.qr_code === "string" ? data.qr_code : "",
+      saveLeadSession({
+        session_id: data.session_id || "",
         plan_label: payload.plan_label,
+        full_name: payload.full_name,
+        email: payload.email,
       });
 
-      window.location.href = "./enviado.html";
+      window.location.href = checkoutUrl;
     } catch (error) {
       console.error(error);
       alert("Erro de conexão. Verifique sua internet e tente novamente.");

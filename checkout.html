@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Apoio MEI Digital | Checkout seguro</title>
+    <meta
+      name="description"
+      content="Checkout seguro da Apoio MEI Digital com processamento de pagamento no subdomínio pay."
+    />
+    <link rel="icon" href="logo.ico" />
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="https://sdk.mercadopago.com/js/v2"></script>
+  </head>
+  <body class="page-shell">
+    <header class="simple-header">
+      <div class="container">
+        <a class="brand" href="./index.html">Apoio MEI Digital</a>
+        <a href="./formulario.html">Voltar para a análise</a>
+      </div>
+    </header>
+
+    <main class="lead-page">
+      <section class="section">
+        <div class="container">
+          <div class="checkout-layout">
+            <section class="checkout-shell">
+              <div class="lead-intro">
+                <p class="badge badge-light">Checkout seguro</p>
+                <h1>Finalize seu atendimento em ambiente protegido</h1>
+                <p id="checkout-status" class="checkout-status">
+                  Estamos preparando o checkout do Mercado Pago para esta sessão.
+                </p>
+              </div>
+
+              <div id="checkout-warning" class="security-notice" hidden></div>
+              <div id="paymentBrick_container" class="checkout-brick" aria-live="polite"></div>
+            </section>
+
+            <aside class="checkout-summary">
+              <p class="summary-label">Resumo da solicitação</p>
+              <h2 id="summary-plan">Carregando plano...</h2>
+              <dl class="summary-list">
+                <div>
+                  <dt>Solicitante</dt>
+                  <dd id="summary-name">Aguardando dados</dd>
+                </div>
+                <div>
+                  <dt>E-mail</dt>
+                  <dd id="summary-email">Aguardando dados</dd>
+                </div>
+                <div>
+                  <dt>Valor</dt>
+                  <dd id="summary-amount">Aguardando dados</dd>
+                </div>
+              </dl>
+              <p class="summary-note">
+                Você está no subdomínio de pagamento da Apoio MEI Digital. O processamento é
+                realizado via Mercado Pago, mas o fluxo permanece dentro do nosso domínio.
+              </p>
+            </aside>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container footer-bottom">
+        <p>&copy; <span id="year"></span> Apoio MEI Digital. Todos os direitos reservados.</p>
+        <p>Serviço privado e independente. Sem vínculo com órgãos públicos.</p>
+      </div>
+    </footer>
+
+    <script type="module" src="/site-config.js"></script>
+    <script type="module" src="./checkout.js"></script>
+    <script type="module" src="./script.js"></script>
+  </body>
+</html>
