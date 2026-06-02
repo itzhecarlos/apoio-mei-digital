@@ -9,7 +9,7 @@ const PLAN_META = {
     price: "0,90",
   },
   total_regularization: {
-    label: "Regularização Total",
+    label: "Regularizacao Total",
     type: "unico",
     price: "1,90",
   },
@@ -21,10 +21,10 @@ function onlyDigits(value) {
 
 function buildWhatsAppMessage(payload) {
   const lines = [
-    "Olá! Vim pelo site da Apoio MEI Digital e quero solicitar atendimento.",
+    "Ola! Vim pelo site da Apoio MEI Digital e quero solicitar atendimento.",
     "",
     `Plano de interesse: ${payload.plan_label}`,
-    `Tipo de contratação: ${payload.plan_type}`,
+    `Tipo de contratacao: ${payload.plan_type}`,
     `Valor: R$ ${payload.plan_price}`,
     "",
     `Nome completo: ${payload.full_name}`,
@@ -65,7 +65,6 @@ if (form) {
       full_name: (document.getElementById("nome-completo")?.value || "").trim(),
       cnpj: onlyDigits(document.getElementById("cnpj")?.value || ""),
       email: (document.getElementById("email")?.value || "").trim(),
-      whatsapp: onlyDigits(document.getElementById("celular")?.value || ""),
       consent_lgpd: !!document.getElementById("aceite-lgpd")?.checked,
       consent_terms: !!document.getElementById("aceite-termos")?.checked,
       plan_label: selectedMeta.label || "",
@@ -73,13 +72,13 @@ if (form) {
       plan_price: selectedMeta.price || "",
     };
 
-    if (!payload.full_name || !payload.email || !payload.whatsapp || !payload.cnpj) {
-      alert("Preencha todos os campos obrigatórios antes de continuar.");
+    if (!payload.full_name || !payload.email || !payload.cnpj) {
+      alert("Preencha todos os campos obrigatorios antes de continuar.");
       return;
     }
 
     if (!payload.consent_lgpd || !payload.consent_terms) {
-      alert("Você precisa aceitar os termos e a política de privacidade para continuar.");
+      alert("Voce precisa aceitar os termos e a politica de privacidade para continuar.");
       return;
     }
 
