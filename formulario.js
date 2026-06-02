@@ -9,8 +9,8 @@ const PLAN_META = {
     price: "29,90",
   },
   total_regularization: {
-    label: "Regularizacao Total",
-    type: "unico",
+    label: "Regularização Total",
+    type: "único",
     price: "99,90",
   },
 };
@@ -21,10 +21,10 @@ function onlyDigits(value) {
 
 function buildWhatsAppMessage(payload) {
   const lines = [
-    "Ola! Vim pelo site da Apoio MEI Digital e quero solicitar atendimento.",
+    "Olá! Vim pelo site da Apoio MEI Digital e quero solicitar atendimento.",
     "",
     `Plano de interesse: ${payload.plan_label}`,
-    `Tipo de contratacao: ${payload.plan_type}`,
+    `Tipo de contratação: ${payload.plan_type}`,
     `Valor: R$ ${payload.plan_price}`,
     "",
     `Nome completo: ${payload.full_name}`,
@@ -73,12 +73,12 @@ if (form) {
     };
 
     if (!payload.full_name || !payload.email || !payload.cnpj) {
-      alert("Preencha todos os campos obrigatorios antes de continuar.");
+      alert("Preencha todos os campos obrigatórios antes de continuar.");
       return;
     }
 
     if (!payload.consent_lgpd || !payload.consent_terms) {
-      alert("Voce precisa aceitar os termos e a politica de privacidade para continuar.");
+      alert("Você precisa aceitar os termos e a política de privacidade para continuar.");
       return;
     }
 
