@@ -1,15 +1,6 @@
-const appConfig = window.APP_CONFIG || {};
-const PAYMENT_API_PATH = appConfig.paymentApiPath || "/api/create-payment-session";
-const CHECKOUT_PATH = appConfig.checkoutPath || "/checkout.html";
-const ALLOWED_PAYMENT_HOSTS = Array.isArray(appConfig.allowedPaymentHosts)
-  ? appConfig.allowedPaymentHosts
-      .map((host) => String(host || "").trim().toLowerCase())
-      .filter(Boolean)
-  : [];
-
 const form = document.querySelector(".lead-form");
-const overlay = document.getElementById("loadingOverlay");
 const planSelect = document.getElementById("plano");
+const WHATSAPP_NUMBER = "5541999763884";
 
 const PLAN_META = {
   monthly: {
@@ -28,62 +19,26 @@ function onlyDigits(value) {
   return String(value || "").replace(/\D/g, "");
 }
 
-function setFormDisabled(targetForm, isDisabled) {
-  if (!targetForm) return;
-  const fields = targetForm.querySelectorAll("input, select, textarea, button");
-  fields.forEach((field) => {
-    field.disabled = isDisabled;
-  });
+function buildWhatsAppMessage(payload) {
+  const lines = [
+    "Olá! Vim pelo site da Apoio MEI Digital e quero solicitar atendimento.",
+    "",
+    `Plano de interesse: ${payload.plan_label}`,
+    `Tipo de contratação: ${payload.plan_type}`,
+    `Valor informado no site: R$ ${payload.plan_price}`,
+    `Nome completo: ${payload.full_name}`,
+    `E-mail: ${payload.email}`,
+    `Celular: ${payload.whatsapp}`,
+    `CNPJ: ${payload.cnpj}`,
+  ];
+
+  return lines.join("\n");
 }
 
-function showLoading(targetForm) {
-  if (overlay) {
-    overlay.style.display = "flex";
-    overlay.setAttribute("aria-hidden", "false");
-  }
-  setFormDisabled(targetForm, true);
-}
-
-function hideLoading(targetForm) {
-  if (overlay) {
-    overlay.style.display = "none";
-    overlay.setAttribute("aria-hidden", "true");
-  }
-  setFormDisabled(targetForm, false);
-}
-
-function makeIdempotencyKey(payload) {
-  const base =
-    `${payload.email}|${payload.cnpj}|${payload.whatsapp}|` +
-    `${payload.plan_code}|${Date.now()}`;
-  let hash = 0;
-  for (let index = 0; index < base.length; index += 1) {
-    hash = (hash * 31 + base.charCodeAt(index)) >>> 0;
-  }
-  return `web_${hash}`;
-}
-
-function buildCheckoutUrl(sessionId) {
-  if (!sessionId || ALLOWED_PAYMENT_HOSTS.length === 0) return "";
-  const paymentHost = ALLOWED_PAYMENT_HOSTS[0];
-  const checkoutUrl = new URL(`https://${paymentHost}${CHECKOUT_PATH}`);
-  checkoutUrl.searchParams.set("session", sessionId);
-  return checkoutUrl.toString();
-}
-
-function isAllowedPaymentUrl(value) {
-  if (!value || ALLOWED_PAYMENT_HOSTS.length === 0) return false;
-
-  try {
-    const parsedUrl = new URL(value);
-    return ALLOWED_PAYMENT_HOSTS.includes(parsedUrl.hostname.toLowerCase());
-  } catch {
-    return false;
-  }
-}
-
-function saveLeadSession(data) {
-  sessionStorage.setItem("lead_session", JSON.stringify(data));
+function buildWhatsAppUrl(message) {
+  const url = new URL(`https://wa.me/${WHATSAPP_NUMBER}`);
+  url.searchParams.set("text", message);
+  return url.toString();
 }
 
 if (form) {
@@ -95,7 +50,7 @@ if (form) {
     }
   }
 
-  form.addEventListener("submit", async (event) => {
+  form.addEventListener("submit", (event) => {
     event.preventDefault();
 
     const selectedPlan = planSelect?.value || "";
@@ -106,90 +61,31 @@ if (form) {
       return;
     }
 
-    if (ALLOWED_PAYMENT_HOSTS.length === 0) {
-      alert("O pagamento ainda não está configurado com segurança. Tente novamente mais tarde.");
-      return;
-    }
-
     const payload = {
       full_name: (document.getElementById("nome-completo")?.value || "").trim(),
       cnpj: onlyDigits(document.getElementById("cnpj")?.value || ""),
-      payer_cpf: onlyDigits(document.getElementById("cpf-pagador")?.value || ""),
       email: (document.getElementById("email")?.value || "").trim(),
       whatsapp: onlyDigits(document.getElementById("celular")?.value || ""),
       consent_lgpd: !!document.getElementById("aceite-lgpd")?.checked,
       consent_terms: !!document.getElementById("aceite-termos")?.checked,
-      plan_code: selectedPlan,
       plan_label: selectedMeta.label || "",
       plan_type: selectedMeta.type || "",
       plan_price: selectedMeta.price || "",
     };
 
-    if (payload.payer_cpf.length !== 11) {
-      alert("Informe o CPF do pagador com 11 dígitos para gerar o pagamento.");
+    if (!payload.full_name || !payload.email || !payload.whatsapp || !payload.cnpj) {
+      alert("Preencha todos os campos obrigatórios antes de continuar.");
       return;
     }
 
-    payload.idempotency_key = makeIdempotencyKey(payload);
-
-    showLoading(form);
-
-    try {
-      const response = await fetch(PAYMENT_API_PATH, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-
-      const contentType = response.headers.get("content-type") || "";
-      let data = null;
-
-      if (contentType.includes("application/json")) {
-        data = await response.json();
-      } else {
-        const text = await response.text();
-        console.error("Resposta não JSON do endpoint de sessão:", text);
-        alert("O servidor retornou uma resposta inesperada. Tente novamente em instantes.");
-        return;
-      }
-
-      if (!response.ok || !data || data.ok === false) {
-        const errorText = Array.isArray(data?.errors)
-          ? data.errors.join("\n")
-          : data?.message || "Não foi possível iniciar o checkout. Tente novamente.";
-        alert(errorText);
-        return;
-      }
-
-      const checkoutUrl =
-        typeof data.checkout_url === "string" && isAllowedPaymentUrl(data.checkout_url)
-          ? data.checkout_url
-          : buildCheckoutUrl(data.session_id);
-
-      if (!checkoutUrl || !isAllowedPaymentUrl(checkoutUrl)) {
-        console.error("Destino de checkout bloqueado:", data?.checkout_url, data?.session_id);
-        alert(
-          "Não conseguimos montar um checkout autorizado para esta solicitação. Revise a configuração do backend."
-        );
-        return;
-      }
-
-      saveLeadSession({
-        session_id: data.session_id || "",
-        plan_label: payload.plan_label,
-        full_name: payload.full_name,
-        email: payload.email,
-      });
-
-      window.location.href = checkoutUrl;
-    } catch (error) {
-      console.error(error);
-      alert("Erro de conexão. Verifique sua internet e tente novamente.");
-    } finally {
-      hideLoading(form);
+    if (!payload.consent_lgpd || !payload.consent_terms) {
+      alert("Você precisa aceitar os termos e a política de privacidade para continuar.");
+      return;
     }
+
+    const whatsappMessage = buildWhatsAppMessage(payload);
+    const whatsappUrl = buildWhatsAppUrl(whatsappMessage);
+
+    window.location.href = whatsappUrl;
   });
 }
