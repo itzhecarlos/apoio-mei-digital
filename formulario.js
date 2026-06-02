@@ -21,14 +21,14 @@ function onlyDigits(value) {
 
 function buildWhatsAppMessage(payload) {
   const lines = [
-    "Olá! Vim pelo site da Apoio MEI Digital e quero solicitar atendimento.",
+    "Olá! Vim pelo site da Apoio MEI Digital e quero solicitar atendimento. ✅",
     "",
     `Plano de interesse: ${payload.plan_label}`,
     `Tipo de contratação: ${payload.plan_type}`,
-    `Valor informado no site: R$ ${payload.plan_price}`,
+    `Valor: R$ ${payload.plan_price}`,
+    "",
     `Nome completo: ${payload.full_name}`,
     `E-mail: ${payload.email}`,
-    `Celular: ${payload.whatsapp}`,
     `CNPJ: ${payload.cnpj}`,
   ];
 
