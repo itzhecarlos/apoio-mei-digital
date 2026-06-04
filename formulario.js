@@ -30,6 +30,8 @@ function buildWhatsAppMessage(payload) {
     `Nome completo: ${payload.full_name}`,
     `E-mail: ${payload.email}`,
     `CNPJ: ${payload.cnpj}`,
+    "",
+    "Estou ciente de que este contato inicial será continuado pelo WhatsApp.",
   ];
 
   return lines.join("\n");
@@ -67,6 +69,7 @@ if (form) {
       email: (document.getElementById("email")?.value || "").trim(),
       consent_lgpd: !!document.getElementById("aceite-lgpd")?.checked,
       consent_terms: !!document.getElementById("aceite-termos")?.checked,
+      consent_flow: !!document.getElementById("aceite-fluxo")?.checked,
       plan_label: selectedMeta.label || "",
       plan_type: selectedMeta.type || "",
       plan_price: selectedMeta.price || "",
@@ -77,8 +80,8 @@ if (form) {
       return;
     }
 
-    if (!payload.consent_lgpd || !payload.consent_terms) {
-      alert("Você precisa aceitar os termos e a política de privacidade para continuar.");
+    if (!payload.consent_lgpd || !payload.consent_terms || !payload.consent_flow) {
+      alert("Você precisa aceitar os termos, a política de privacidade e o aviso sobre o fluxo para continuar.");
       return;
     }
 
